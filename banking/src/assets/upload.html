@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPLOAD - Secure File Transfer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #334155;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f766e;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "📤";
+            font-size: 1.6rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #0f766e;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .upload-card {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .upload-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .upload-subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 0.975rem;
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #f8fafc;
+        }
+
+        .upload-area:hover {
+            border-color: #0f766e;
+            background: rgba(15, 118, 110, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: #0f766e;
+            background: rgba(15, 118, 110, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon-container {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0f766e, #0d9488);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-icon-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            filter: brightness(1.2);
+        }
+
+        .upload-text {
+            font-size: 1.125rem;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .upload-hint {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-progress {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .progress-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .file-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #0f766e, #0d9488);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .progress-info {
+            flex: 1;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
+        }
+
+        .progress-subtitle {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .progress-status {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-main {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
+        }
+
+        .status-sub {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .file-upload-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.875rem;
+        }
+
+        .file-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-percentage {
+            font-weight: 700;
+            color: #0f766e;
+            font-size: 0.875rem;
+            min-width: 35px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0f766e, #14b8a6);
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: progressShine 2s infinite;
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .upload-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .success-state {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .success-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #059669;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-subtitle {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .floating-files {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-file {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0.1;
+            animation: floatAround 12s ease-in-out infinite;
+        }
+
+        .floating-file:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-file:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation-delay: 4s;
+        }
+
+        .floating-file:nth-child(3) {
+            bottom: 30%;
+            left: 20%;
+            animation-delay: 8s;
+        }
+
+        @keyframes floatAround {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.1; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.3; }
+        }
+
+        @media (max-width: 640px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .upload-card {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .upload-title {
+                font-size: 1.5rem;
+            }
+
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-files">
+        <div class="floating-file">📄</div>
+        <div class="floating-file">📁</div>
+        <div class="floating-file">🖼️</div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">UPLOAD</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#terms">Terms</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="upload-card">
+            <div id="initialState">
+                <h1 class="upload-title">Upload Files</h1>
+                <p class="upload-subtitle">Drag and drop your files here or click to browse</p>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon-container">
+                        <div class="upload-icon">📁</div>
+                    </div>
+                    <div class="upload-text">Choose files to upload</div>
+                    <div class="upload-hint">Supports all file types up to 50GB</div>
+                    <input type="file" class="file-input" id="fileInput" multiple>
+                </div>
+            </div>
+
+            <div class="upload-progress" id="uploadProgress">
+                <div class="progress-header">
+                    <div class="file-icon">📄</div>
+                    <div class="progress-info">
+                        <div class="progress-title">Uploading files...</div>
+                        <div class="progress-subtitle">Please wait while your files are being uploaded</div>
+                    </div>
+                </div>
+
+                <div class="progress-status">
+                    <div class="status-main">Your file is being uploaded.</div>
+                    <div class="status-sub">Support our free file size limit</div>
+                </div>
+
+                <div class="file-upload-item">
+                    <div class="file-upload-header">
+                        <span class="file-name" id="fileName">Filename.pdf</span>
+                        <div class="file-progress">
+                            <span class="progress-percentage" id="progressPercentage">92%</span>
+                            <button class="close-btn">×</button>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="upload-stats">
+                        <span id="uploadSpeed">Upload speed: 8.5 MB/s</span>
+                        <span id="fileSize">2.4 MB of 15.8 MB</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-state" id="successState">
+                <div class="success-icon">✓</div>
+                <div class="success-title">Upload Complete!</div>
+                <div class="success-subtitle">Your files have been successfully uploaded to the cloud</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const initialState = document.getElementById('initialState');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const successState = document.getElementById('successState');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercentage = document.getElementById('progressPercentage');
+        const fileName = document.getElementById('fileName');
+        const uploadSpeed = document.getElementById('uploadSpeed');
+        const fileSize = document.getElementById('fileSize');
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        function handleFileUpload(file) {
+            fileName.textContent = file.name;
+            
+            // Show progress state
+            initialState.style.display = 'none';
+            uploadProgress.style.display = 'block';
+            successState.style.display = 'none';
+            
+            simulateUpload(file);
+        }
+
+        function simulateUpload(file) {
+            let progress = 0;
+            const totalSize = file.size || (Math.random() * 20 + 5) * 1024 * 1024; // Random size if not available
+            const interval = setInterval(() => {
+                progress += Math.random() * 4 + 1; // Random progress increment
+                
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    showSuccess();
+                }
+                
+                // Update progress bar
+                progressFill.style.width = progress + '%';
+                progressPercentage.textContent = Math.round(progress) + '%';
+                
+                // Update speed and file size
+                const currentSpeed = (Math.random() * 15 + 3).toFixed(1);
+                const uploadedSize = (totalSize * (progress / 100)) / (1024 * 1024);
+                const totalSizeMB = totalSize / (1024 * 1024);
+                
+                uploadSpeed.textContent = `Upload speed: ${currentSpeed} MB/s`;
+                fileSize.textContent = `${uploadedSize.toFixed(1)} MB of ${totalSizeMB.toFixed(1)} MB`;
+                
+            }, 300);
+        }
+
+        function showSuccess() {
+            setTimeout(() => {
+                uploadProgress.style.display = 'none';
+                successState.style.display = 'block';
+            }, 800);
+
+            // Auto reset after 3 seconds
+            setTimeout(() => {
+                resetUpload();
+            }, 4000);
+        }
+
+        function resetUpload() {
+            initialState.style.display = 'block';
+            uploadProgress.style.display = 'none';
+            successState.style.display = 'none';
+            progressFill.style.width = '0%';
+            progressPercentage.textContent = '0%';
+            fileInput.value = '';
+        }
+
+        // Close button functionality
+        document.querySelector('.close-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            resetUpload();
+        });
+    </script>
+</body>
+</html>
