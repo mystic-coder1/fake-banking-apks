@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Sparkles } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+
+
+
 export default function APKDetectorHomepage() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showDetails, setShowDetails] = useState(false);
+    const navigate = useNavigate();
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -67,7 +72,7 @@ export default function APKDetectorHomepage() {
               {/* Shimmer effect */}
               <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"></div>
               <Shield className="w-6 h-6 relative z-10" />
-              <span className="relative z-10">Check APK Now</span>
+              <span onClick={()=> navigate('/result')} className="relative z-10">Check APK Now</span>
               <Sparkles className="w-5 h-5 relative z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
             
