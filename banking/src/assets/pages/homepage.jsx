@@ -72,7 +72,7 @@ export default function APKDetectorHomepage() {
               {/* Shimmer effect */}
               <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"></div>
               <Shield className="w-6 h-6 relative z-10" />
-              <span onClick={()=> navigate('/result')} className="relative z-10">Check APK Now</span>
+              <span onClick={()=> navigate('/upload')} className="relative z-10">Check APK Now</span>
               <Sparkles className="w-5 h-5 relative z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
             
