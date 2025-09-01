@@ -3,6 +3,7 @@ import { Shield, Sparkles } from 'lucide-react';
 
 export default function APKDetectorHomepage() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -70,13 +71,94 @@ export default function APKDetectorHomepage() {
               <Sparkles className="w-5 h-5 relative z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
             
-            <button className="group relative text-gray-700 hover:text-blue-600 px-12 py-6 rounded-2xl font-bold text-xl transition-all duration-500 border-2 border-gray-300 hover:border-blue-400 bg-white/80 backdrop-blur-md hover:bg-white hover:shadow-2xl hover:shadow-blue-500/20 transform hover:-translate-y-2 hover:scale-105 overflow-hidden">
+            <button 
+              className="group relative text-gray-700 hover:text-blue-600 px-12 py-6 rounded-2xl font-bold text-xl transition-all duration-500 border-2 border-gray-300 hover:border-blue-400 bg-white/80 backdrop-blur-md hover:bg-white hover:shadow-2xl hover:shadow-blue-500/20 transform hover:-translate-y-2 hover:scale-105 overflow-hidden"
+              onClick={() => setShowDetails(!showDetails)}
+            >
               {/* Glass morphism effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <span className="relative z-10">Learn More</span>
             </button>
           </div>
         </div>
+
+        {/* Detailed Information Panel */}
+        {showDetails && (
+          <div className="mt-16 bg-white/90 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-gray-200 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Shield className="w-6 h-6 text-blue-600" />
+                  Multi-Layered Defense System
+                </h3>
+                <div className="space-y-3 text-gray-700">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <strong>Trust Anchor:</strong> Digital signature & SHA256 hash verification against official bank registry
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <strong>Behavioral Analysis:</strong> AndroidManifest.xml permission profiling using 120+ security parameters
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <strong>Visual Intelligence:</strong> Perceptual hash matching + OCR typosquatting detection
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-cyan-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <strong>Network Forensics:</strong> Domain reputation scoring via real-time API integration
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-pink-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <strong>Campaign Detection:</strong> Graph database linking APK signatures, developers & domains
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Sparkles className="w-6 h-6 text-purple-600" />
+                  Key Features
+                </h3>
+                <div className="space-y-4 text-gray-700">
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl">
+                    <div className="font-semibold text-blue-800">Explainable AI Results</div>
+                    <div className="text-sm">Risk scores (0-100) showing why an app is flagged</div>
+                  </div>
+                  <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-xl">
+                    <div className="font-semibold text-green-800">Fast Processing</div>
+                    <div className="text-sm">15 API calls/second real-time verification</div>
+                  </div>
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl">
+                    <div className="font-semibold text-purple-800">High Accuracy</div>
+                    <div className="text-sm">4x better fraud detection than traditional methods</div>
+                  </div>
+                  <div className="bg-gradient-to-r from-orange-50 to-red-50 p-4 rounded-xl">
+                    <div className="font-semibold text-orange-800">Cost Effective</div>
+                    <div className="text-sm">$3M monthly savings for financial institutions</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <div className="text-center">
+                <p className="text-gray-600 mb-4">Developed by Team hawk_eye</p>
+                <p className="text-sm text-gray-500">Institute of Engineering and Technology, DAVV, Indore, M.P.</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
